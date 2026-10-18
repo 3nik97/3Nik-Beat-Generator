@@ -379,7 +379,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 
 <script>
 const $=id=>document.getElementById(id);
-const APP_VERSION='1.8';
+const APP_VERSION='1.9';
 const TRACKS=[
   {id:'kick',label:'KICK',fam:'d'},{id:'snare',label:'SNARE',fam:'d'},{id:'clap',label:'CLAP',fam:'d'},
   {id:'ch',label:'C-HAT',fam:'c'},{id:'oh',label:'O-HAT',fam:'c'},{id:'crash',label:'CRASH',fam:'c'},{id:'ride',label:'RIDE',fam:'c'},
@@ -831,7 +831,17 @@ let v0='seq';try{v0=sessionStorage.getItem('pb16.view')||'seq'}catch(e){}
 showView(v0);
 
 /* Offline: attivo solo nella versione installabile */
-if(document.querySelector('meta[name="pb-pwa"]')&&'serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+if(HOSTED&&'serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>{
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)reg.update().catch(()=>{})});
+  }).catch(()=>{});
+  /* Quando arriva una versione nuova mentre l'app è aperta: ricarico una volta, se non sta suonando */
+  let hadCtrl=!!navigator.serviceWorker.controller,reloaded=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    if(!hadCtrl){hadCtrl=true;return}
+    if(reloaded||playing||exporting)return;reloaded=true;location.reload();
+  });
+}
 </script>
 
 </body>
