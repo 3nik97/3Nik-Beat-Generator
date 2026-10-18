@@ -13,7 +13,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<style>html,body{height:100%;margin:0}:root{color-scheme:dark;padding-top:env(safe-area-inset-top,0px)}img{max-width:100%}[hidden]{display:none!important}body{overscroll-behavior:none}</style>
+<style>html,body{height:100%;margin:0}:root{color-scheme:dark}img{max-width:100%}[hidden]{display:none!important}body{overscroll-behavior:none}</style>
 <title>3Nik Beat Generator</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
@@ -44,8 +44,8 @@
   --drum:#ff7150;--cym:#2fdac6;--tom:#9b84ff;--blob1:#b23a22;--blob2:#0d7a70;--blob3:#5134c4;--blob4:#80600f;--blob-o:.55;color-scheme:dark}
 
 *{box-sizing:border-box}
-html{background:var(--base);height:100%;box-sizing:border-box}
-body{background:var(--base);color:var(--ink);font-family:var(--f);font-size:14px;height:100%;margin:0;display:flex;flex-direction:column;overflow:hidden;
+html{background:var(--base);height:100%;box-sizing:border-box;overflow:hidden}
+body{background:var(--base);color:var(--ink);font-family:var(--f);font-size:14px;height:100%;margin:0;overflow:hidden;
   -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;overflow-x:hidden}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation;padding:0}
 button:focus-visible,input:focus-visible{outline:2px solid var(--drum);outline-offset:2px}
@@ -183,16 +183,37 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 .slot.empty canvas{opacity:.4}
 .slot-meta{font-family:var(--f-mono);font-size:11px;color:var(--ink-2)}
 .slot-act{display:flex;gap:6px}
-.slot-act button{flex:1;height:32px;border-radius:10px;font-size:12px;font-weight:700;background:var(--glass-strong);box-shadow:inset 0 1px 0 var(--edge)}
+.slot-act button{flex:1;height:32px;border-radius:10px;font-size:12px;font-weight:700;background:var(--glass-strong);box-shadow:inset 0 1px 0 var(--edge);display:inline-flex;align-items:center;justify-content:center;gap:5px}
+.slot-act svg{width:14px;height:14px}
 .slot-act .load{background:var(--ink);color:var(--base);box-shadow:none}
-.slot-act .del{flex:0 0 34px;color:var(--ink-2)}
-.slot-act .del.confirm{flex:0 0 auto;padding:0 8px;background:#ff3b30;color:#fff}
+.slot-act .del{color:var(--ink-2);background:transparent;box-shadow:inset 0 0 0 1px var(--hair)}
+.slot-act .del.confirm{background:#ff3b30;color:#fff;box-shadow:none}
+.ren{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--ink-2);flex:none}
+.ren svg{width:15px;height:15px}
+.ren:active{background:var(--glass-strong)}
+.slot-name:not(:disabled){box-shadow:inset 0 -1px 0 var(--hair)}
+
+/* Esporta MP3 */
+.exp-body{display:flex;flex-direction:column;gap:10px;padding:0 4px 4px}
+.exp-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.exp-row span{font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.sheet-wrap{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:16px;background:rgba(0,0,0,.45)}
+.sheet{width:min(400px,100%);padding:18px;display:flex;flex-direction:column;gap:12px;border-radius:28px;background:var(--glass-strong)}
+.sheet-h{display:flex;flex-direction:column;gap:2px}
+.sheet-h b{font-family:var(--f-round);font-size:18px}
+.sheet-h span{font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.sheet audio{width:100%}
+.bar{height:6px;border-radius:3px;background:var(--track);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--drum),var(--tom));transition:width .2s}
+.sheet-act{display:flex;gap:8px;justify-content:flex-end}
+.sheet-act .pill{height:40px;padding:0 18px}
 .note{font-size:12px;color:var(--ink-2);margin:6px 6px 0;line-height:1.45}
 
-/* Barra flottante */
+/* Guscio dell'app: occupa tutto lo schermo; sopra scorre il contenuto, sotto sta la barra */
+.shell{position:fixed;left:0;right:0;top:0;height:var(--app-h,100%);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
 .scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 14px}
-.dockbar{flex:none;display:flex;justify-content:center;padding-top:2px;padding-bottom:max(10px,calc(env(safe-area-inset-bottom,0px) - 8px));
+.dockbar{flex:none;display:flex;justify-content:center;padding-top:2px;padding-bottom:max(8px,calc(env(safe-area-inset-bottom,0px) - 18px));
   padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
 .dock{z-index:20;display:flex;align-items:center;gap:6px;padding:7px;border-radius:36px;width:min(440px,100%)}
 .play{width:58px;height:58px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;
@@ -217,6 +238,17 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 <div class="bg" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
 <div class="toast glass" id="toast" role="status"></div>
 
+<div class="sheet-wrap" id="sheet" hidden>
+  <div class="sheet glass" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="sheet-h"><b id="sheetTitle">Esportazione MP3</b><span id="sheetMeta"></span></div>
+    <div class="bar" id="sheetBar"><i id="sheetProg"></i></div>
+    <audio id="sheetAudio" controls hidden></audio>
+    <p class="note" id="sheetNote" style="margin:0"></p>
+    <div class="sheet-act"><button class="pill" id="sheetClose">Chiudi</button><button class="pill primary" id="sheetSave" hidden>Salva o condividi</button></div>
+  </div>
+</div>
+
+<div class="shell" id="shell">
 <main class="scroll" id="scroll">
 <div class="app">
   <section class="glass top" aria-label="Tempo">
@@ -318,9 +350,16 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
         <button class="pill" id="clear">Svuota griglia</button>
       </div>
     </div>
+    <div class="glass panel" style="margin-bottom:12px">
+      <div class="sec-h">Esporta in MP3 <small>Quante volte ripetere il pattern</small></div>
+      <div class="exp-body">
+        <div class="seg" id="reps"><button data-v="1">1×</button><button data-v="2">2×</button><button data-v="4">4×</button><button data-v="8">8×</button></div>
+        <div class="exp-row"><span id="expInfo"></span><button class="pill primary" id="expCur">Esporta il beat attuale</button></div>
+      </div>
+    </div>
     <div class="sec-h" style="margin-top:4px">I tuoi pattern <small>Salva step, tempo, mixer ed effetti</small></div>
     <div class="slots" id="slots"></div>
-    <p class="note">I pattern restano salvati su questo dispositivo. Tocca il nome per rinominarlo.</p>
+    <p class="note">I pattern restano salvati su questo dispositivo. Tocca la matita per rinominarli, MP3 per esportarli.</p>
   </section>
 </div>
 </main>
@@ -334,6 +373,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
     <button class="tab" role="tab" aria-selected="false" data-view="pat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M7 5h10M9 2.5h6"/></svg>Pattern</button>
   </div>
 </nav></div>
+</div>
 
 <script>
 const $=id=>document.getElementById(id);
@@ -373,11 +413,15 @@ function persistSlots(){store('pb16.slots',slots)}
 function touch(){if(!dirty){dirty=true;updateCur()}persist()}
 
 /* ---------- Audio ---------- */
-let ctx,A={},noiseBuf,ohEnv=null,lastSize=-1;
+let ctx,A={},noiseBuf,ohEnv=null,lastSize=-1,OFF=false;
 function initAudio(){
   if(ctx)return;
   try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
   ctx=new (window.AudioContext||window.webkitAudioContext)();
+  buildGraph();
+}
+function buildGraph(){
+  A={};lastSize=-1;
   const g=()=>ctx.createGain();
   A.mix=g();A.send=g();A.master=g();
   A.drive=ctx.createWaveShaper();A.drive.oversample='2x';
@@ -393,7 +437,7 @@ function initAudio(){
   TRACKS.forEach((_,i)=>applyTrack(i));applyFx();
 }
 async function wake(){initAudio();if(ctx.state!=='running')try{await ctx.resume()}catch(e){}}
-function setP(p,v){p.setTargetAtTime(v,ctx.currentTime,.015)}
+function setP(p,v){if(OFF)p.value=v;else p.setTargetAtTime(v,ctx.currentTime,.015)}
 const volGain=v=>Math.pow(v/100,2)*1.5;
 const cutHz=c=>Math.round(30*Math.pow(2,c/100*Math.log2(20000/30)));
 function applyTrack(i){if(!ctx)return;setP(A.tr[i].v.gain,volGain(S.vol[i]));setP(A.tr[i].s.gain,S.send[i]?1:0)}
@@ -632,26 +676,119 @@ function renderSlots(){
   const box=$('slots');box.innerHTML='';
   slots.forEach((sl,k)=>{
     const d=document.createElement('div');d.className='glass slot'+(sl?'':' empty')+(k===curSlot&&sl?' active':'');
-    d.innerHTML=`<div class="slot-top"><span class="key">${KEYS[k]}</span><input class="slot-name" id="slot-name-${k}" maxlength="20" ${sl?'':'disabled'} placeholder="Slot vuoto" aria-label="Nome slot ${KEYS[k]}"></div>
+    const PEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4"/></svg>';
+    const DL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
+    d.innerHTML=`<div class="slot-top"><span class="key">${KEYS[k]}</span><input class="slot-name" id="slot-name-${k}" maxlength="20" enterkeyhint="done" ${sl?'':'disabled'} placeholder="Slot vuoto" aria-label="Nome slot ${KEYS[k]}">${sl?`<button class="ren" aria-label="Rinomina ${KEYS[k]}">${PEN}</button>`:''}</div>
       <canvas></canvas><div class="slot-meta">${sl?sl.data.bpm+' BPM · swing '+sl.data.swing+'%':'—'}</div>
-      <div class="slot-act">${sl?'<button class="load">Carica</button><button class="save">Salva</button><button class="del" aria-label="Elimina">✕</button>':'<button class="save">Salva qui</button>'}</div>`;
+      ${sl?`<div class="slot-act"><button class="load">Carica</button><button class="save">Salva</button></div>
+      <div class="slot-act"><button class="mp3">${DL}MP3</button><button class="del">Elimina</button></div>`:'<div class="slot-act"><button class="save">Salva qui</button></div>'}`;
     const inp=d.querySelector('input');if(sl)inp.value=sl.name;
-    inp.addEventListener('change',()=>{if(!slots[k])return;slots[k].name=inp.value.trim()||'Pattern '+KEYS[k];inp.value=slots[k].name;persistSlots();updateCur()});
+    inp.addEventListener('change',()=>{if(!slots[k])return;slots[k].name=inp.value.trim()||'Pattern '+KEYS[k];inp.value=slots[k].name;persistSlots();updateCur();toast('Rinominato in '+slots[k].name)});
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur()});
     drawThumb(d.querySelector('canvas'),sl&&sl.data);
     d.querySelector('.save').onclick=()=>saveTo(k);
     if(sl){d.querySelector('.load').onclick=()=>loadFrom(k);
+      d.querySelector('.ren').onclick=()=>{inp.focus();inp.select()};
+      d.querySelector('.mp3').onclick=()=>exportMp3(clone(slots[k].data),slots[k].name);
       const del=d.querySelector('.del');let armed=null;
       del.onclick=()=>{if(armed){clearTimeout(armed);slots[k]=null;if(curSlot===k){curSlot=-1;dirty=true}persistSlots();persist();renderSlots();updateCur();toast('Slot '+KEYS[k]+' eliminato');return}
-        del.textContent='Elimina?';del.classList.add('confirm');armed=setTimeout(()=>{armed=null;del.textContent='✕';del.classList.remove('confirm')},2500)}}
+        del.textContent='Conferma';del.classList.add('confirm');armed=setTimeout(()=>{armed=null;del.textContent='Elimina';del.classList.remove('confirm')},2500)}}
     box.append(d);
   });
 }
+
+/* ---------- Esportazione MP3 ---------- */
+const HOSTED=!!document.querySelector('meta[name="pb-pwa"]');
+let reps=4,mp3={blob:null,url:null,name:''};
+function updateExpInfo(){$('expInfo').textContent='Circa '+Math.round(60/S.bpm/4*N*reps)+' s a '+S.bpm+' BPM';
+  $('reps').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v===reps))}
+$('reps').querySelectorAll('button').forEach(b=>b.onclick=()=>{reps=+b.dataset.v;try{localStorage.setItem('pb16.reps',reps)}catch(e){}updateExpInfo()});
+$('expCur').onclick=()=>exportMp3(clone(S),curSlot>=0&&slots[curSlot]?slots[curSlot].name:'3Nik beat');
+function loadLame(){
+  if(window.lamejs)return Promise.resolve();
+  return new Promise((res,rej)=>{const s=document.createElement('script');
+    s.src=HOSTED?'lame.min.js':'https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js';
+    s.onload=res;s.onerror=()=>rej(new Error('lame'));document.head.append(s)});
+}
+async function renderAudio(data,n){
+  const sr=44100,sd=60/data.bpm/4,lead=.03,len=lead+sd*N*n+3;
+  const off=new (window.OfflineAudioContext||window.webkitOfflineAudioContext)(2,Math.ceil(len*sr),sr);
+  const keep={ctx,A,noiseBuf,ohEnv,lastSize,S};
+  try{
+    ctx=off;S=data;ohEnv=null;OFF=true;buildGraph();
+    for(let r=0;r<n;r++)for(let s=0;s<N;s++){
+      const t=lead+(r*N+s)*sd+(s%2?(2*data.swing/100-1)*sd:0);
+      for(let i=0;i<TRACKS.length;i++)if(data.pattern[i][s]&&audible(i))trigger(i,t,data.pattern[i][s]);
+    }
+  }finally{({ctx,A,noiseBuf,ohEnv,lastSize,S}=keep);OFF=false}
+  return {buf:await off.startRendering(),minLen:Math.ceil((lead+sd*N*n)*sr)};
+}
+const tick=()=>new Promise(r=>setTimeout(r,0));
+async function encodeMp3(buf,minLen,onProg){
+  const L=buf.getChannelData(0),R=buf.getChannelData(1);
+  let end=L.length;while(end>minLen&&Math.abs(L[end-1])<4e-4&&Math.abs(R[end-1])<4e-4)end--;
+  end=Math.min(L.length,end+Math.round(buf.sampleRate*.05));
+  const toI=a=>{const o=new Int16Array(end);for(let i=0;i<end;i++){const v=Math.max(-1,Math.min(1,a[i]));o[i]=v<0?v*32768:v*32767}return o};
+  const l=toI(L),r=toI(R),enc=new lamejs.Mp3Encoder(2,buf.sampleRate,192),parts=[];
+  for(let i=0,k=0;i<end;i+=1152,k++){
+    const m=enc.encodeBuffer(l.subarray(i,i+1152),r.subarray(i,i+1152));if(m.length)parts.push(new Int8Array(m));
+    if(k%150===0){onProg(i/end);await tick()}
+  }
+  const f=enc.flush();if(f.length)parts.push(new Int8Array(f));
+  return {blob:new Blob(parts,{type:'audio/mpeg'}),secs:end/buf.sampleRate};
+}
+function sheetState(title,meta,note,prog,ready){
+  $('sheet').hidden=false;$('sheetTitle').textContent=title;$('sheetMeta').textContent=meta;$('sheetNote').textContent=note;
+  $('sheetBar').hidden=ready;$('sheetProg').style.width=Math.round(prog*100)+'%';
+  $('sheetSave').hidden=!ready;$('sheetAudio').hidden=!ready;
+}
+let exporting=false;
+async function exportMp3(data,name){
+  if(exporting)return;exporting=true;
+  if(playing)stop();
+  if(!data.pattern.some(r=>r.some(Boolean))){exporting=false;toast('Il pattern è vuoto');return}
+  const label=name+' · '+reps+'× · '+data.bpm+' BPM';
+  try{
+    sheetState('Creo l\'MP3…',label,'Ci vuole qualche secondo.',.05,false);await tick();
+    await loadLame();
+    sheetState('Creo l\'MP3…',label,'Registro il beat con mixer ed effetti.',.2,false);await tick();
+    const {buf,minLen}=await renderAudio(data,reps);
+    const {blob,secs}=await encodeMp3(buf,minLen,p=>{$('sheetProg').style.width=Math.round((.3+p*.7)*100)+'%'});
+    if(mp3.url)URL.revokeObjectURL(mp3.url);
+    mp3={blob,url:URL.createObjectURL(blob),name:(name||'3Nik beat').replace(/[^\w\- àèéìòù]+/gi,'').trim().replace(/\s+/g,'-')+'.mp3'};
+    $('sheetAudio').src=mp3.url;
+    sheetState('MP3 pronto',label+' · '+Math.round(secs)+' s · '+Math.round(blob.size/1024)+' KB',
+      'Tocca "Salva o condividi" e scegli "Salva su File", AirDrop o un\'app.',1,true);
+  }catch(e){
+    sheetState('Esportazione non riuscita',label,e.message==='lame'?'Non riesco a caricare il convertitore MP3. Riapri l\'app con internet una volta, poi riprova.':'Qualcosa è andato storto durante la creazione del file. Riprova.',0,false);
+  }finally{exporting=false}
+}
+$('sheetSave').onclick=async()=>{
+  if(!mp3.blob)return;
+  const file=new File([mp3.blob],mp3.name,{type:'audio/mpeg'});
+  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:mp3.name});return}}
+  catch(e){if(e.name==='AbortError')return}
+  const a=document.createElement('a');a.href=mp3.url;a.download=mp3.name;document.body.append(a);a.click();a.remove();
+  if(!HOSTED)$('sheetNote').textContent='In questa anteprima dentro Claude il salvataggio è bloccato: esporta dall\'app installata sulla schermata Home.';
+};
+$('sheetClose').onclick=()=>{$('sheet').hidden=true;$('sheetAudio').pause()};
+
+/* ---------- Altezza schermo nell'app installata ---------- */
+const STANDALONE=navigator.standalone===true||matchMedia('(display-mode: standalone)').matches;
+function fitShell(){
+  if(!STANDALONE)return;
+  const portrait=innerHeight>=innerWidth,full=portrait?Math.max(screen.width,screen.height):Math.min(screen.width,screen.height);
+  const gap=full-innerHeight;
+  document.documentElement.style.setProperty('--app-h',(gap>0&&gap<160?full:innerHeight)+'px');
+}
+addEventListener('resize',fitShell);addEventListener('orientationchange',()=>setTimeout(fitShell,300));
+fitShell();
 
 /* ---------- Viste, toast ---------- */
 function showView(v){
   document.querySelectorAll('.view').forEach(s=>s.hidden=s.id!=='view-'+v);
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.view===v));
-  if(v==='pat')renderSlots();
+  if(v==='pat'){renderSlots();updateExpInfo()}
   try{sessionStorage.setItem('pb16.view',v)}catch(e){}
   $('scroll').scrollTop=0;
 }
@@ -668,6 +805,8 @@ if(Array.isArray(savedSlots)&&savedSlots.length===NSLOTS)slots=savedSlots.map(s=
 if(saved&&saved.S){S=merge(defaults(),saved.S);curSlot=typeof saved.curSlot==='number'?saved.curSlot:-1;dirty=!!saved.dirty;renderAll()}
 else{renderAll()}
 layout();
+try{const r=+localStorage.getItem('pb16.reps');if([1,2,4,8].includes(r))reps=r}catch(e){}
+updateExpInfo();
 let v0='seq';try{v0=sessionStorage.getItem('pb16.view')||'seq'}catch(e){}
 showView(v0);
 
