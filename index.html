@@ -77,6 +77,8 @@ body.playing .bg span{animation-duration:12s}
 h1{font-family:var(--f-round);font-weight:800;font-size:clamp(16px,4.6vw,21px);letter-spacing:-.02em;margin:0;white-space:nowrap}
 h1 b{font-weight:800;background:linear-gradient(120deg,var(--drum),var(--tom));-webkit-background-clip:text;background-clip:text;color:transparent}
 .cur{display:flex;align-items:center;gap:6px;min-width:0}
+.brand{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ver{align-self:flex-start;font-family:var(--f-mono);font-size:10px;font-weight:600;color:var(--ink-2);padding:1px 7px;border-radius:8px;background:var(--track);font-variant-numeric:tabular-nums}
 .cur-name{font-size:12px;font-weight:600;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:min(120px,22vw)}
 .cur-name.dirty::after{content:" •";color:var(--drum)}
 .pill{height:32px;padding:0 14px;border-radius:16px;background:var(--glass-strong);font-weight:600;font-size:13px;
@@ -253,7 +255,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 <div class="app">
   <section class="glass top" aria-label="Tempo">
     <div class="top-row">
-      <h1>3Nik <b>Beat</b> Generator</h1>
+      <div class="brand"><h1>3Nik <b>Beat</b> Generator</h1><span class="ver" id="ver">v1.7</span></div>
       <div class="cur">
         <span class="cur-name" id="curName">Non salvato</span>
         <button class="pill primary" id="quickSave">Salva</button>
@@ -377,6 +379,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 
 <script>
 const $=id=>document.getElementById(id);
+const APP_VERSION='1.7';
 const TRACKS=[
   {id:'kick',label:'KICK',fam:'d'},{id:'snare',label:'SNARE',fam:'d'},{id:'clap',label:'CLAP',fam:'d'},
   {id:'ch',label:'C-HAT',fam:'c'},{id:'oh',label:'O-HAT',fam:'c'},{id:'crash',label:'CRASH',fam:'c'},{id:'ride',label:'RIDE',fam:'c'},
@@ -803,6 +806,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing)st
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>{if(!$('view-pat').hidden)renderSlots()});
 
 /* ---------- Avvio ---------- */
+$('ver').textContent='v'+APP_VERSION;
 buildGrid();buildMixer();
 const saved=read('pb16.state'),savedSlots=read('pb16.slots');
 if(Array.isArray(savedSlots)&&savedSlots.length===NSLOTS)slots=savedSlots.map(s=>s&&s.data?{name:String(s.name||''),data:merge(defaults(),s.data),at:s.at}:null);
