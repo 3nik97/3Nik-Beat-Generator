@@ -8,24 +8,26 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="3Nik Beat">
-<meta name="theme-color" content="#e8ecf4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#080a12" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#080a12" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<style>html,body{height:100%;margin:0}:root{color-scheme:light dark;padding-top:env(safe-area-inset-top,0px)}img{max-width:100%}[hidden]{display:none!important}body{overscroll-behavior:none}</style>
+<style>html,body{height:100%;margin:0}:root{color-scheme:dark;padding-top:env(safe-area-inset-top,0px)}img{max-width:100%}[hidden]{display:none!important}body{overscroll-behavior:none}</style>
 <title>3Nik Beat Generator</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Layout: sfondo a macchie di colore che si muovono lente, pannelli di vetro sopra; barra flottante in basso con Play + 4 sezioni (Sequencer, Mixer, Effetti, Pattern). Solo font di sistema, così funziona offline. */
 :root{
-  --base:#e8ecf4; --ink:#131722; --ink-2:#5a6377; --hair:rgba(19,23,34,.08);
-  --glass:rgba(255,255,255,.44); --glass-strong:rgba(255,255,255,.7);
-  --edge:rgba(255,255,255,.9); --edge-low:rgba(255,255,255,.2); --shade:rgba(40,50,90,.16);
-  --cell:rgba(255,255,255,.4); --cell-beat:rgba(255,255,255,.66); --cell-edge:rgba(255,255,255,.75);
-  --track:rgba(19,23,34,.12);
-  --drum:#ff5a3a; --cym:#0fb5a3; --tom:#7656ff;
-  --blob1:#ffad94; --blob2:#86e0d2; --blob3:#b7a6ff; --blob4:#ffd98a; --blob-o:.85;
+  /* Tema scuro fisso, scelto per l'app */
+  --base:#080a12; --ink:#eef1f8; --ink-2:#99a2b6; --hair:rgba(255,255,255,.08);
+  --glass:rgba(30,34,52,.46); --glass-strong:rgba(52,58,84,.72);
+  --edge:rgba(255,255,255,.2); --edge-low:rgba(255,255,255,.04); --shade:rgba(0,0,0,.5);
+  --cell:rgba(255,255,255,.06); --cell-beat:rgba(255,255,255,.12); --cell-edge:rgba(255,255,255,.09);
+  --track:rgba(255,255,255,.16);
+  --drum:#ff7150; --cym:#2fdac6; --tom:#9b84ff;
+  --blob1:#b23a22; --blob2:#0d7a70; --blob3:#5134c4; --blob4:#80600f; --blob-o:.6;
+  color-scheme:dark;
   --f:-apple-system,"SF Pro Text",system-ui,"Segoe UI",Roboto,sans-serif;
   --f-round:ui-rounded,"SF Pro Rounded",-apple-system,system-ui,sans-serif;
   --f-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
@@ -42,10 +44,8 @@
   --drum:#ff7150;--cym:#2fdac6;--tom:#9b84ff;--blob1:#b23a22;--blob2:#0d7a70;--blob3:#5134c4;--blob4:#80600f;--blob-o:.55;color-scheme:dark}
 
 *{box-sizing:border-box}
-html{background:var(--base)}
-body{background:var(--base);color:var(--ink);font-family:var(--f);font-size:14px;min-height:100%;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
-  padding-block:12px calc(112px + env(safe-area-inset-bottom,0px));
+html{background:var(--base);height:100%;box-sizing:border-box}
+body{background:var(--base);color:var(--ink);font-family:var(--f);font-size:14px;height:100%;margin:0;display:flex;flex-direction:column;overflow:hidden;
   -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;overflow-x:hidden}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation;padding:0}
 button:focus-visible,input:focus-visible{outline:2px solid var(--drum);outline-offset:2px}
@@ -105,13 +105,13 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 .panel{padding:12px 10px}
 .grid{--cols:16;display:flex;flex-direction:column;gap:5px}
 .grid.paged{--cols:8}
-.row{display:grid;grid-template-columns:52px repeat(var(--cols),minmax(0,1fr)) 27px 27px;gap:4px;align-items:stretch}
+.row{display:grid;grid-template-columns:60px repeat(var(--cols),minmax(0,1fr)) 27px 27px;gap:4px;align-items:stretch}
 .d{--c:var(--drum)} .c{--c:var(--cym)} .t{--c:var(--tom)}
 .grid.paged.p0 .h1,.grid.paged.p1 .h0{display:none}
 .num{font-family:var(--f-mono);font-size:10px;color:var(--ink-2);text-align:center;font-variant-numeric:tabular-nums;padding-bottom:1px}
 .num.beat{color:var(--ink);font-weight:700}
 .num.now{color:var(--c,var(--drum))}
-.lbl{height:34px;border-radius:12px;display:flex;align-items:center;gap:5px;padding:0 3px;font-size:10px;font-weight:700;letter-spacing:.03em;text-align:left;white-space:nowrap;overflow:hidden}
+.lbl{height:34px;border-radius:12px;display:flex;align-items:center;gap:4px;padding:0 2px;font-size:9.5px;font-weight:700;letter-spacing:0;text-align:left;white-space:nowrap;overflow:hidden}
 .lbl i{width:7px;height:7px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c);flex:none}
 .lbl.hit{background:color-mix(in srgb,var(--c) 22%,transparent)}
 .step{height:34px;border-radius:11px;background:var(--cell);box-shadow:inset 0 1px 0 var(--cell-edge);transition:background .08s,box-shadow .08s}
@@ -128,6 +128,11 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 .mbtn.fxb[aria-pressed="true"]{background:radial-gradient(circle at 32% 22%,rgba(255,255,255,.5),transparent 60%),var(--c);color:#fff;box-shadow:0 0 12px -3px var(--c)}
 .row.off .step,.row.off .lbl{opacity:.3}
 .pager{display:none;gap:6px;margin-top:10px}
+.seq-tools{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 4px 10px}
+.seq-tools h2{margin:0;font-family:var(--f-round);font-size:16px;font-weight:700}
+#seqClear{display:inline-flex;align-items:center;gap:6px}
+#seqClear svg{width:15px;height:15px}
+#seqClear.undo{background:var(--drum);color:#fff}
 .grid.paged + .pager{display:flex}
 .seg{display:flex;flex:1;padding:3px;border-radius:14px;background:var(--track);gap:2px}
 .seg button{flex:1;height:30px;border-radius:11px;font-size:12px;font-weight:600;color:var(--ink-2);white-space:nowrap}
@@ -185,8 +190,11 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 .note{font-size:12px;color:var(--ink-2);margin:6px 6px 0;line-height:1.45}
 
 /* Barra flottante */
-.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:20;
-  display:flex;align-items:center;gap:6px;padding:7px;border-radius:36px;width:min(440px,calc(100% - 24px))}
+.scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 14px}
+.dockbar{flex:none;display:flex;justify-content:center;padding-top:2px;padding-bottom:max(10px,calc(env(safe-area-inset-bottom,0px) - 8px));
+  padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+.dock{z-index:20;display:flex;align-items:center;gap:6px;padding:7px;border-radius:36px;width:min(440px,100%)}
 .play{width:58px;height:58px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;
   background:radial-gradient(circle at 35% 25%,rgba(255,255,255,.55),transparent 55%),linear-gradient(150deg,var(--drum),var(--tom));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 6px 18px -4px color-mix(in srgb,var(--drum) 70%,transparent)}
@@ -209,6 +217,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 <div class="bg" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
 <div class="toast glass" id="toast" role="status"></div>
 
+<main class="scroll" id="scroll">
 <div class="app">
   <section class="glass top" aria-label="Tempo">
     <div class="top-row">
@@ -236,6 +245,10 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 
   <!-- SEQUENCER -->
   <section class="glass panel view" id="view-seq" aria-label="Sequencer">
+    <div class="seq-tools">
+      <h2>Griglia</h2>
+      <button class="pill" id="seqClear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg><span>Svuota</span></button>
+    </div>
     <div class="grid" id="grid"></div>
     <div class="pager">
       <div class="seg"><button id="pg0" aria-pressed="true">Step 1–8</button><button id="pg1" aria-pressed="false">Step 9–16</button></div>
@@ -310,8 +323,9 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
     <p class="note">I pattern restano salvati su questo dispositivo. Tocca il nome per rinominarlo.</p>
   </section>
 </div>
+</main>
 
-<nav class="dock glass" aria-label="Navigazione">
+<div class="dockbar"><nav class="dock glass" aria-label="Navigazione">
   <button class="play" id="play" aria-label="Play"><svg viewBox="0 0 24 24" id="playIcon" fill="currentColor"><path d="M8 5.2v13.6c0 .8.9 1.3 1.6.8l10.2-6.8c.6-.4.6-1.2 0-1.6L9.6 4.4C8.9 3.9 8 4.4 8 5.2z"/></svg></button>
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" aria-selected="true" data-view="seq"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="5" height="5" rx="1.5"/><rect x="9.5" y="3" width="5" height="5" rx="1.5" opacity=".4"/><rect x="16" y="3" width="5" height="5" rx="1.5"/><rect x="3" y="9.5" width="5" height="5" rx="1.5" opacity=".4"/><rect x="9.5" y="9.5" width="5" height="5" rx="1.5"/><rect x="16" y="9.5" width="5" height="5" rx="1.5" opacity=".4"/><rect x="3" y="16" width="5" height="5" rx="1.5"/><rect x="9.5" y="16" width="5" height="5" rx="1.5" opacity=".4"/><rect x="16" y="16" width="5" height="5" rx="1.5"/></svg>Sequencer</button>
@@ -319,7 +333,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
     <button class="tab" role="tab" aria-selected="false" data-view="fx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12c2.5 0 2.5-7 5-7s2.5 14 5 14 2.5-14 5-14 2.5 7 5 7"/></svg>Effetti</button>
     <button class="tab" role="tab" aria-selected="false" data-view="pat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M7 5h10M9 2.5h6"/></svg>Pattern</button>
   </div>
-</nav>
+</nav></div>
 
 <script>
 const $=id=>document.getElementById(id);
@@ -574,6 +588,16 @@ function applyPreset(name){
   S.bpm=pr.bpm;S.swing=pr.swing;renderAll();touch();toast('Pattern '+document.querySelector(`[data-preset="${name}"]`).textContent+' caricato');
 }
 document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>applyPreset(b.dataset.preset));
+let undoPat=null,undoT;
+function resetClearBtn(){undoPat=null;clearTimeout(undoT);$('seqClear').classList.remove('undo');$('seqClear').querySelector('span').textContent='Svuota'}
+$('seqClear').onclick=()=>{
+  const b=$('seqClear');
+  if(undoPat){S.pattern=undoPat;resetClearBtn();renderSteps();touch();toast('Griglia ripristinata');return}
+  if(!S.pattern.some(r=>r.some(Boolean))){toast('La griglia è già vuota');return}
+  undoPat=clone(S.pattern);S.pattern=TRACKS.map(()=>Array(N).fill(0));renderSteps();touch();
+  b.classList.add('undo');b.querySelector('span').textContent='Annulla';toast('Griglia svuotata');
+  clearTimeout(undoT);undoT=setTimeout(resetClearBtn,5000);
+};
 $('clear').onclick=()=>{S.pattern=TRACKS.map(()=>Array(N).fill(0));renderSteps();touch();toast('Griglia svuotata')};
 $('rand').onclick=()=>{
   const dens={kick:.3,snare:.15,clap:.12,ch:.6,oh:.12,crash:.04,ride:.2,lt:.08,mt:.08,ht:.08,sticks:.1,cym:.04};
@@ -629,7 +653,7 @@ function showView(v){
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.view===v));
   if(v==='pat')renderSlots();
   try{sessionStorage.setItem('pb16.view',v)}catch(e){}
-  window.scrollTo({top:0});
+  $('scroll').scrollTop=0;
 }
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>showView(t.dataset.view));
 let toastT;function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1700)}
@@ -642,7 +666,7 @@ buildGrid();buildMixer();
 const saved=read('pb16.state'),savedSlots=read('pb16.slots');
 if(Array.isArray(savedSlots)&&savedSlots.length===NSLOTS)slots=savedSlots.map(s=>s&&s.data?{name:String(s.name||''),data:merge(defaults(),s.data),at:s.at}:null);
 if(saved&&saved.S){S=merge(defaults(),saved.S);curSlot=typeof saved.curSlot==='number'?saved.curSlot:-1;dirty=!!saved.dirty;renderAll()}
-else{const pr=PRESETS.boom;S.pattern=TRACKS.map(t=>{const s=pr.p[t.id]||'';return Array.from({length:N},(_,i)=>s[i]==='X'?2:s[i]==='x'?1:0)});S.bpm=pr.bpm;S.swing=pr.swing;renderAll()}
+else{renderAll()}
 layout();
 let v0='seq';try{v0=sessionStorage.getItem('pb16.view')||'seq'}catch(e){}
 showView(v0);
