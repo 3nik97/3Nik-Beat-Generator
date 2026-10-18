@@ -379,7 +379,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 
 <script>
 const $=id=>document.getElementById(id);
-const APP_VERSION='1.7';
+const APP_VERSION='1.8';
 const TRACKS=[
   {id:'kick',label:'KICK',fam:'d'},{id:'snare',label:'SNARE',fam:'d'},{id:'clap',label:'CLAP',fam:'d'},
   {id:'ch',label:'C-HAT',fam:'c'},{id:'oh',label:'O-HAT',fam:'c'},{id:'crash',label:'CRASH',fam:'c'},{id:'ride',label:'RIDE',fam:'c'},
@@ -789,6 +789,18 @@ function fitShell(){
   if(full-innerHeight>=30&&topInset>0)st.setProperty('--dock-pb','8px');else st.removeProperty('--dock-pb');
 }
 addEventListener('resize',fitShell);addEventListener('orientationchange',()=>setTimeout(fitShell,300));
+window.visualViewport?.addEventListener('resize',fitShell);
+/* All'avvio iOS 27 passa misure sbagliate finché non si ruota lo schermo: forzo lo stesso ricalcolo
+   toccando per un istante il viewport, poi rimisuro. */
+function nudgeViewport(){
+  const m=document.querySelector('meta[name=viewport]');
+  if(m&&STANDALONE){const c=m.content;m.content=c.replace(/initial-scale=1(\.0)?/,'initial-scale=1.0001');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{m.content=c;setTimeout(fitShell,60)}))}
+  [0,250,800,1600].forEach(t=>setTimeout(fitShell,t));
+}
+addEventListener('load',nudgeViewport);
+addEventListener('pageshow',nudgeViewport);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)nudgeViewport()});
 fitShell();
 
 /* ---------- Viste, toast ---------- */
