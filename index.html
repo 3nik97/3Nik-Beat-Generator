@@ -213,7 +213,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 .shell{position:fixed;left:0;right:0;top:0;height:var(--app-h,100%);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
 .scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 14px}
-.dockbar{flex:none;display:flex;justify-content:center;padding-top:2px;padding-bottom:max(8px,calc(env(safe-area-inset-bottom,0px) - 18px));
+.dockbar{flex:none;display:flex;justify-content:center;padding-top:2px;padding-bottom:var(--dock-pb,max(8px,calc(env(safe-area-inset-bottom,0px) - 18px)));
   padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
 .dock{z-index:20;display:flex;align-items:center;gap:6px;padding:7px;border-radius:36px;width:min(440px,100%)}
 .play{width:58px;height:58px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;
@@ -776,10 +776,14 @@ $('sheetClose').onclick=()=>{$('sheet').hidden=true;$('sheetAudio').pause()};
 /* ---------- Altezza schermo nell'app installata ---------- */
 const STANDALONE=navigator.standalone===true||matchMedia('(display-mode: standalone)').matches;
 function fitShell(){
-  if(!STANDALONE)return;
+  /* iOS 27: nell'app installata la finestra della pagina è più corta dello schermo e il fondo
+     (con la zona della linea home) resta fuori. In quel caso la barra va appoggiata al bordo reale. */
+  const st=document.documentElement.style;
+  st.setProperty('--app-h',innerHeight+'px');
+  if(!STANDALONE){st.removeProperty('--dock-pb');return}
   const portrait=innerHeight>=innerWidth,full=portrait?Math.max(screen.width,screen.height):Math.min(screen.width,screen.height);
-  const gap=full-innerHeight;
-  document.documentElement.style.setProperty('--app-h',(gap>0&&gap<160?full:innerHeight)+'px');
+  const topInset=parseFloat(getComputedStyle($('shell')).paddingTop)||0;
+  if(full-innerHeight>=30&&topInset>0)st.setProperty('--dock-pb','8px');else st.removeProperty('--dock-pb');
 }
 addEventListener('resize',fitShell);addEventListener('orientationchange',()=>setTimeout(fitShell,300));
 fitShell();
