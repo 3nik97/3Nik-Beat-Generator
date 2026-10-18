@@ -6,7 +6,7 @@
 <meta name="pb-pwa" content="1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="3Nik Beat">
 <meta name="theme-color" content="#080a12" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#080a12" media="(prefers-color-scheme: dark)">
@@ -226,6 +226,12 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 .credit{margin:26px 0 6px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:12px;font-weight:500;color:var(--ink-2);letter-spacing:.02em}
 .credit svg{width:13px;height:13px;color:var(--drum)}
 
+/* Backup */
+.bk-txt{font-size:12.5px;color:var(--ink-2);line-height:1.45}
+.bk-act{display:flex;gap:8px;flex-wrap:wrap}
+.bk-act .pill{display:inline-flex;align-items:center;cursor:pointer}
+.vh{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+
 /* Esporta MP3 */
 .exp-body{display:flex;flex-direction:column;gap:10px;padding:0 4px 4px}
 .exp-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -401,6 +407,14 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
     <div class="sec-h" style="margin-top:4px">I tuoi pattern <small>Salva step, tempo, mixer ed effetti</small></div>
     <div class="slots" id="slots"></div>
     <p class="note">I pattern restano salvati su questo dispositivo. Tocca la matita per rinominarli, MP3 per esportarli.</p>
+    <div class="glass panel" style="margin-top:14px">
+      <div class="sec-h">Backup <small>Per reinstallare o cambiare telefono</small></div>
+      <div class="exp-body">
+        <span class="bk-txt">Salva tutti i pattern, il beat in corso, mixer ed effetti in un file. Dopo una reinstallazione, tocca Ripristina e scegli quel file.</span>
+        <div class="bk-act"><button class="pill primary" id="bkSave">Salva backup</button><label class="pill" for="bkFile" id="bkLoad">Ripristina</label>
+          <input type="file" id="bkFile" accept=".json,application/json" class="vh"></div>
+      </div>
+    </div>
     <p class="credit">Made with <svg viewBox="0 0 24 24" fill="currentColor" aria-label="love" role="img"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.5 3 4.5 6.8 4.5c2.1 0 3.6 1.1 5.2 3 1.6-1.9 3.1-3 5.2-3 3.8 0 5.9 4 4.4 7.3C19.5 16.4 12 21 12 21z"/></svg> by 3Nik</p>
   </section>
 </div>
@@ -419,7 +433,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 
 <script>
 const $=id=>document.getElementById(id);
-const APP_VERSION='1.11';
+const APP_VERSION='1.12';
 const TRACKS=[
   {id:'kick',label:'KICK',fam:'d'},{id:'snare',label:'SNARE',fam:'d'},{id:'clap',label:'CLAP',fam:'d'},
   {id:'ch',label:'C-HAT',fam:'c'},{id:'oh',label:'O-HAT',fam:'c'},{id:'crash',label:'CRASH',fam:'c'},{id:'ride',label:'RIDE',fam:'c'},
@@ -882,14 +896,39 @@ async function exportMp3(data,name){
     sheetState('Esportazione non riuscita',label,e.message==='lame'?'Non riesco a caricare il convertitore MP3. Riapri l\'app con internet una volta, poi riprova.':'Qualcosa è andato storto durante la creazione del file. Riprova.',0,false);
   }finally{exporting=false}
 }
+async function shareOrDownload(blob,name,type){
+  const file=new File([blob],name,{type});
+  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});return true}}
+  catch(e){if(e.name==='AbortError')return true}
+  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),60000);return HOSTED;
+}
 $('sheetSave').onclick=async()=>{
   if(!mp3.blob)return;
-  const file=new File([mp3.blob],mp3.name,{type:'audio/mpeg'});
-  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:mp3.name});return}}
-  catch(e){if(e.name==='AbortError')return}
-  const a=document.createElement('a');a.href=mp3.url;a.download=mp3.name;document.body.append(a);a.click();a.remove();
-  if(!HOSTED)$('sheetNote').textContent='In questa anteprima dentro Claude il salvataggio è bloccato: esporta dall\'app installata sulla schermata Home.';
+  const ok=await shareOrDownload(mp3.blob,mp3.name,'audio/mpeg');
+  if(!ok)$('sheetNote').textContent='In questa anteprima dentro Claude il salvataggio è bloccato: esporta dall\'app installata sulla schermata Home.';
 };
+
+/* ---------- Backup e ripristino ---------- */
+$('bkSave').onclick=async()=>{
+  const d=new Date(),day=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const data={app:'3nik-beat',format:1,version:APP_VERSION,saved:d.toISOString(),slots,state:S,curSlot};
+  const ok=await shareOrDownload(new Blob([JSON.stringify(data)],{type:'application/json'}),'3nik-beat-backup-'+day+'.json','application/json');
+  toast(ok?'Backup pronto: salvalo su File':'Backup bloccato in questa anteprima: usa l\'app installata');
+};
+$('bkFile').addEventListener('change',async e=>{
+  const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
+  try{
+    const d=JSON.parse(await f.text());
+    if(!d||d.app!=='3nik-beat'||!Array.isArray(d.slots))throw new Error('formato');
+    slots=Array.from({length:NSLOTS},(_,k)=>{const s=d.slots[k];
+      return s&&s.data?{name:String(s.name||'Pattern '+KEYS[k]).slice(0,20),data:merge(defaults(),s.data),at:s.at||Date.now()}:slots[k]});
+    if(d.state){S=merge(defaults(),d.state);curSlot=typeof d.curSlot==='number'&&slots[d.curSlot]?d.curSlot:-1;dirty=false;renderAll();
+      if(ctx){lastSize=-1;applyFx();TRACKS.forEach((_,i)=>applyTrack(i))}}
+    persistSlots();persist();renderSlots();updateCur();
+    toast('Backup ripristinato: '+slots.filter(Boolean).length+' pattern');
+  }catch(err){toast('Questo file non è un backup di 3Nik Beat')}
+});
 $('sheetClose').onclick=()=>{$('sheet').hidden=true;$('sheetAudio').pause()};
 
 /* ---------- Altezza schermo nell'app installata ---------- */
