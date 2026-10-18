@@ -1,7 +1,7 @@
 // 3Nik Beat Generator — service worker
 // Pagina: prima la rete (versione più recente), la copia salvata solo se offline.
 // Altri file (icone, convertitore MP3): prima la copia salvata.
-const CACHE='nik-beat-1.9';
+const CACHE='nik-beat-1.10';
 const FILES=['./','./index.html','./manifest.webmanifest','./icon-180.png','./icon-192.png','./icon-512.png','./lame.min.js'];
 
 self.addEventListener('install',e=>{

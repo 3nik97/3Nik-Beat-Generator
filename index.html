@@ -129,13 +129,12 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 .mbtn.fxb{font-size:9px}
 .mbtn.fxb[aria-pressed="true"]{background:radial-gradient(circle at 32% 22%,rgba(255,255,255,.5),transparent 60%),var(--c);color:#fff;box-shadow:0 0 12px -3px var(--c)}
 .row.off .step,.row.off .lbl{opacity:.3}
-.pager{display:none;gap:6px;margin-top:10px}
+.pager{display:flex;gap:6px;margin:0 0 12px}
 .seq-tools{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 4px 10px}
 .seq-tools h2{margin:0;font-family:var(--f-round);font-size:16px;font-weight:700}
 #seqClear{display:inline-flex;align-items:center;gap:6px}
 #seqClear svg{width:15px;height:15px}
 #seqClear.undo{background:var(--drum);color:#fff}
-.grid.paged + .pager{display:flex}
 .seg{display:flex;flex:1;padding:3px;border-radius:14px;background:var(--track);gap:2px}
 .seg button{flex:1;height:30px;border-radius:11px;font-size:12px;font-weight:600;color:var(--ink-2);white-space:nowrap}
 .seg button[aria-pressed="true"]{background:var(--glass-strong);color:var(--ink);box-shadow:inset 0 1px 0 var(--edge),0 2px 6px -2px var(--shade)}
@@ -218,11 +217,19 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 .dockbar{flex:none;display:flex;justify-content:center;padding-top:2px;padding-bottom:var(--dock-pb,max(8px,calc(env(safe-area-inset-bottom,0px) - 18px)));
   padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
 .dock{z-index:20;display:flex;align-items:center;gap:6px;padding:7px;border-radius:36px;width:min(440px,100%)}
-.play{width:58px;height:58px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;
-  background:radial-gradient(circle at 35% 25%,rgba(255,255,255,.55),transparent 55%),linear-gradient(150deg,var(--drum),var(--tom));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 6px 18px -4px color-mix(in srgb,var(--drum) 70%,transparent)}
+/* Tasto Play/Pause in stile console da DJ: disco scuro di vetro, anello LED verde */
+.play{--led:#3df58a;width:60px;height:60px;border-radius:50%;flex:none;position:relative;display:grid;place-items:center;color:#e8edf2;
+  background:radial-gradient(circle at 50% 30%,#454b57 0%,#232731 45%,#111319 80%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -3px 8px rgba(0,0,0,.65),0 0 0 1px rgba(0,0,0,.6),0 8px 18px -6px rgba(0,0,0,.8)}
+.play .ring{position:absolute;inset:4px;border-radius:50%;border:2.5px solid color-mix(in srgb,var(--led) 30%,transparent);pointer-events:none;
+  animation:cueblink 1.1s steps(1) infinite}
+.play::after{content:"";position:absolute;left:14%;right:14%;top:7%;height:38%;border-radius:50%;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(255,255,255,.28),rgba(255,255,255,0))}
+.play.on .ring{animation:none;border-color:var(--led);box-shadow:0 0 10px var(--led),inset 0 0 8px color-mix(in srgb,var(--led) 55%,transparent)}
+.play.on{color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -3px 8px rgba(0,0,0,.65),0 0 0 1px rgba(0,0,0,.6),0 0 18px -4px var(--led),0 8px 18px -6px rgba(0,0,0,.8)}
+@keyframes cueblink{50%{border-color:color-mix(in srgb,var(--led) 75%,transparent);box-shadow:0 0 6px color-mix(in srgb,var(--led) 60%,transparent)}}
 .play:active{transform:scale(.94)}
-.play svg{width:24px;height:24px}
+.play svg{width:30px;height:20px;position:relative}
 .tabs{display:flex;flex:1;gap:2px}
 .tab{flex:1;height:54px;border-radius:26px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:600;color:var(--ink-2)}
 .tab svg{width:22px;height:22px}
@@ -231,7 +238,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 .toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translate(-50%,-140%);z-index:30;padding:10px 18px;border-radius:20px;font-weight:600;font-size:13px;transition:transform .35s cubic-bezier(.3,1.3,.5,1);white-space:nowrap}
 .toast.show{transform:translate(-50%,0)}
 
-@media (prefers-reduced-motion: reduce){.bg span{animation:none!important}.step,.switch::after,.toast{transition:none}}
+@media (prefers-reduced-motion: reduce){.bg span,.play .ring{animation:none!important}.step,.switch::after,.toast{transition:none}}
 </style>
 </head>
 <body>
@@ -283,11 +290,11 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
       <h2>Griglia</h2>
       <button class="pill" id="seqClear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg><span>Svuota</span></button>
     </div>
-    <div class="grid" id="grid"></div>
-    <div class="pager">
+    <div class="pager" id="pager">
       <div class="seg"><button id="pg0" aria-pressed="true">Step 1–8</button><button id="pg1" aria-pressed="false">Step 9–16</button></div>
       <button class="pill" id="follow" aria-pressed="true">Segui</button>
     </div>
+    <div class="grid" id="grid"></div>
     <p class="note">Tocca uno step per accenderlo, ancora per l'accento, una terza volta per spegnerlo. Tocca il nome di una traccia per sentirla. M mette in muto la traccia, FX accende o spegne delay e riverbero solo su quella traccia.</p>
   </section>
 
@@ -367,7 +374,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 </main>
 
 <div class="dockbar"><nav class="dock glass" aria-label="Navigazione">
-  <button class="play" id="play" aria-label="Play"><svg viewBox="0 0 24 24" id="playIcon" fill="currentColor"><path d="M8 5.2v13.6c0 .8.9 1.3 1.6.8l10.2-6.8c.6-.4.6-1.2 0-1.6L9.6 4.4C8.9 3.9 8 4.4 8 5.2z"/></svg></button>
+  <button class="play" id="play" aria-label="Play"><span class="ring"></span><svg viewBox="0 0 30 20" fill="currentColor" aria-hidden="true"><path d="M1.5 3.2v13.6c0 .7.8 1.1 1.4.7l9.6-6.8c.5-.4.5-1.1 0-1.4L2.9 2.5c-.6-.4-1.4 0-1.4.7z"/><path d="M14.2 18.2l3.6-16.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/><rect x="20" y="3" width="3.2" height="14" rx="1"/><rect x="25.3" y="3" width="3.2" height="14" rx="1"/></svg></button>
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" aria-selected="true" data-view="seq"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="5" height="5" rx="1.5"/><rect x="9.5" y="3" width="5" height="5" rx="1.5" opacity=".4"/><rect x="16" y="3" width="5" height="5" rx="1.5"/><rect x="3" y="9.5" width="5" height="5" rx="1.5" opacity=".4"/><rect x="9.5" y="9.5" width="5" height="5" rx="1.5"/><rect x="16" y="9.5" width="5" height="5" rx="1.5" opacity=".4"/><rect x="3" y="16" width="5" height="5" rx="1.5"/><rect x="9.5" y="16" width="5" height="5" rx="1.5" opacity=".4"/><rect x="16" y="16" width="5" height="5" rx="1.5"/></svg>Sequencer</button>
     <button class="tab" role="tab" aria-selected="false" data-view="mix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 3v18M12 3v18M18 3v18"/><circle cx="6" cy="15" r="2.4" fill="currentColor"/><circle cx="12" cy="8" r="2.4" fill="currentColor"/><circle cx="18" cy="13" r="2.4" fill="currentColor"/></svg>Mixer</button>
@@ -379,7 +386,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 
 <script>
 const $=id=>document.getElementById(id);
-const APP_VERSION='1.9';
+const APP_VERSION='1.10';
 const TRACKS=[
   {id:'kick',label:'KICK',fam:'d'},{id:'snare',label:'SNARE',fam:'d'},{id:'clap',label:'CLAP',fam:'d'},
   {id:'ch',label:'C-HAT',fam:'c'},{id:'oh',label:'O-HAT',fam:'c'},{id:'crash',label:'CRASH',fam:'c'},{id:'ride',label:'RIDE',fam:'c'},
@@ -398,7 +405,7 @@ const PRESETS={
 /* ---------- Stato ---------- */
 function defaults(){return{
   pattern:TRACKS.map(()=>Array(N).fill(0)),vol:TRACKS.map(()=>80),mute:TRACKS.map(()=>false),solo:TRACKS.map(()=>false),
-  send:TRACKS.map(t=>t.id!=='kick'),bpm:96,swing:50,
+  send:TRACKS.map(()=>false),bpm:96,swing:50,
   fx:{filter:{on:false,type:'lp',cut:100,res:15},drive:{on:false,amt:30},delay:{on:false,div:3,fb:35,mix:25},verb:{on:true,size:40,mix:18},master:85}}}
 const clone=o=>JSON.parse(JSON.stringify(o));
 function merge(d,s){
@@ -508,12 +515,12 @@ const ICON_STOP='<rect x="6" y="6" width="12" height="12" rx="2.5"/>';
 async function start(){
   await wake();playing=true;cur=0;queue=[];nextTime=ctx.currentTime+.06;
   schedule();timer=setInterval(schedule,25);requestAnimationFrame(draw);
-  $('play').setAttribute('aria-label','Stop');$('playIcon').innerHTML=ICON_STOP;document.body.classList.add('playing');
+  $('play').setAttribute('aria-label','Pausa');$('play').classList.add('on');document.body.classList.add('playing');
   try{wakeLock=await navigator.wakeLock?.request('screen')}catch(e){}
 }
 function stop(){
   playing=false;clearInterval(timer);queue=[];showStep(-1);
-  $('play').setAttribute('aria-label','Play');$('playIcon').innerHTML=ICON_PLAY;document.body.classList.remove('playing');
+  $('play').setAttribute('aria-label','Play');$('play').classList.remove('on');document.body.classList.remove('playing');
   try{wakeLock?.release()}catch(e){}wakeLock=null;
 }
 function draw(){if(!playing)return;while(queue.length&&queue[0].t<=ctx.currentTime)showStep(queue.shift().s);requestAnimationFrame(draw)}
@@ -561,7 +568,7 @@ function showStep(s){
 const mq=matchMedia('(min-width: 720px)');const isPaged=()=>!mq.matches;
 function setPage(p){if(p===page&&grid.classList.contains('p'+p))return;page=p;
   grid.classList.toggle('p0',p===0);grid.classList.toggle('p1',p===1);$('pg0').setAttribute('aria-pressed',p===0);$('pg1').setAttribute('aria-pressed',p===1)}
-function layout(){grid.classList.toggle('paged',isPaged());setPage(page)}
+function layout(){grid.classList.toggle('paged',isPaged());$('pager').hidden=!isPaged();setPage(page)}
 mq.addEventListener?mq.addEventListener('change',layout):mq.addListener(layout);
 $('pg0').onclick=()=>{follow=false;$('follow').setAttribute('aria-pressed',false);setPage(0)};
 $('pg1').onclick=()=>{follow=false;$('follow').setAttribute('aria-pressed',false);setPage(1)};
@@ -824,6 +831,8 @@ const saved=read('pb16.state'),savedSlots=read('pb16.slots');
 if(Array.isArray(savedSlots)&&savedSlots.length===NSLOTS)slots=savedSlots.map(s=>s&&s.data?{name:String(s.name||''),data:merge(defaults(),s.data),at:s.at}:null);
 if(saved&&saved.S){S=merge(defaults(),saved.S);curSlot=typeof saved.curSlot==='number'?saved.curSlot:-1;dirty=!!saved.dirty;renderAll()}
 else{renderAll()}
+/* Una volta sola: FX spenti su tutti i canali del beat in corso (i pattern salvati restano come sono) */
+try{if(!localStorage.getItem('pb16.fxoff')){S.send=S.send.map(()=>false);renderTracks();persist();localStorage.setItem('pb16.fxoff','1')}}catch(e){}
 layout();
 try{const r=+localStorage.getItem('pb16.reps');if([1,2,4,8].includes(r))reps=r}catch(e){}
 updateExpInfo();
